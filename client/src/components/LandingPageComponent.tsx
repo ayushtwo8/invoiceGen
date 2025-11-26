@@ -13,10 +13,13 @@ import {
   DollarSign,
   BarChart3
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export default function LandingPage() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -97,8 +100,8 @@ export default function LandingPage() {
             <div className="hidden md:flex items-center gap-6">
               <a href="#features" className="text-sm text-gray-600 hover:text-black transition-colors">Features</a>
               <a href="#pricing" className="text-sm text-gray-600 hover:text-black transition-colors">Pricing</a>
-              <button className="text-sm text-gray-600 hover:text-black transition-colors">Login</button>
-              <button className="px-4 py-1.5 text-sm bg-black text-white rounded-lg hover:bg-gray-800 transition-colors">
+              <button className="text-sm text-gray-600 hover:text-black transition-colors" onClick={() => {navigate('/login')}}>Login</button>
+              <button className="px-4 py-1.5 text-sm bg-black text-white rounded-lg hover:bg-gray-800 transition-colors" onClick={() => {navigate('/register')}}>
                 Sign up
               </button>
             </div>
@@ -117,7 +120,7 @@ export default function LandingPage() {
             <div className="md:hidden py-4 space-y-3 border-t border-gray-100">
               <a href="#features" className="block text-sm text-gray-600 hover:text-black transition-colors">Features</a>
               <a href="#pricing" className="block text-sm text-gray-600 hover:text-black transition-colors">Pricing</a>
-              <button className="block text-sm text-gray-600 hover:text-black transition-colors">Login</button>
+              <button className="block text-sm text-gray-600 hover:text-black transition-colors" ></button>
               <button className="w-full px-4 py-1.5 text-sm bg-black text-white rounded-lg">Sign up</button>
             </div>
           )}
@@ -144,7 +147,7 @@ export default function LandingPage() {
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <button className="px-5 py-2 bg-black text-white text-sm rounded-lg hover:bg-gray-800 transition-colors flex items-center gap-2">
+              <button className="px-5 py-2 bg-black text-white text-sm rounded-lg hover:bg-gray-800 transition-colors flex items-center gap-2" onClick={() => {navigate('/register')}}>
                 Get started free
                 <ArrowRight className="w-4 h-4" />
               </button>

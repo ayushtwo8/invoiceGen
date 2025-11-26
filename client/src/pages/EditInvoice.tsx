@@ -1,18 +1,21 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { toast } from 'react-hot-toast';
-import { Plus, Trash2, Save } from 'lucide-react';
-import { useAuthStore } from '../store/authStore';
-import { useClientStore } from '../store/clientStore';
-import { useInvoiceStore } from '../store/invoiceStore';
-import { invoiceService } from '../services/invoiceService';
-import { clientService } from '../services/clientService';
-import { calculateItemAmount, calculateInvoiceTotals } from '../utils/calculations';
-import type { InvoiceItem } from '../types';
-import Button from '../components/Button';
-import Input from '../components/Input';
-import Select from '../components/Select';
-import InvoicePreview from '../components/InvoicePreview';
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-hot-toast";
+import { Plus, Trash2, Save } from "lucide-react";
+import { useAuthStore } from "../store/authStore";
+import { useClientStore } from "../store/clientStore";
+import { useInvoiceStore } from "../store/invoiceStore";
+import { invoiceService } from "../services/invoiceService";
+import { clientService } from "../services/clientService";
+import {
+  calculateItemAmount,
+  calculateInvoiceTotals,
+} from "../utils/calculations";
+import type { InvoiceItem } from "../types";
+import Button from "../components/Button";
+import Input from "../components/Input";
+import Select from "../components/Select";
+import InvoicePreview from "../components/InvoicePreview";
 
 export default function EditInvoice() {
   const { id } = useParams<{ id: string }>();
@@ -26,23 +29,23 @@ export default function EditInvoice() {
   const [showPreview, setShowPreview] = useState(false);
 
   const [formData, setFormData] = useState({
-    invoiceNumber: '',
-    clientId: '',
-    clientName: '',
-    clientEmail: '',
-    clientAddress: '',
-    issueDate: '',
-    dueDate: '',
-    currency: 'INR',
-    status: 'draft' as 'draft' | 'sent' | 'paid' | 'overdue',
+    invoiceNumber: "",
+    clientId: "",
+    clientName: "",
+    clientEmail: "",
+    clientAddress: "",
+    issueDate: "",
+    dueDate: "",
+    currency: "INR",
+    status: "draft" as "draft" | "sent" | "paid" | "overdue",
     discount: 0,
-    discountType: 'fixed' as 'percentage' | 'fixed',
-    notes: '',
-    terms: '',
+    discountType: "fixed" as "percentage" | "fixed",
+    notes: "",
+    terms: "",
   });
 
   const [items, setItems] = useState<InvoiceItem[]>([
-    { description: '', quantity: 1, rate: 0, tax: 0, amount: 0 },
+    { description: "", quantity: 1, rate: 0, tax: 0, amount: 0 },
   ]);
 
   useEffect(() => {
@@ -62,20 +65,20 @@ export default function EditInvoice() {
         clientId: invoiceData.clientId,
         clientName: invoiceData.clientName,
         clientEmail: invoiceData.clientEmail,
-        clientAddress: invoiceData.clientAddress || '',
-        issueDate: new Date(invoiceData.issueDate).toISOString().split('T')[0],
-        dueDate: new Date(invoiceData.dueDate).toISOString().split('T')[0],
+        clientAddress: invoiceData.clientAddress || "",
+        issueDate: new Date(invoiceData.issueDate).toISOString().split("T")[0],
+        dueDate: new Date(invoiceData.dueDate).toISOString().split("T")[0],
         currency: invoiceData.currency,
         status: invoiceData.status,
         discount: invoiceData.discount,
         discountType: invoiceData.discountType,
-        notes: invoiceData.notes || '',
-        terms: invoiceData.terms || '',
+        notes: invoiceData.notes || "",
+        terms: invoiceData.terms || "",
       });
       setItems(invoiceData.items);
     } catch (error) {
-      toast.error('Failed to fetch invoice');
-      navigate('/invoices');
+      toast.error("Failed to fetch invoice");
+      navigate("/app/invoices");
     } finally {
       setFetchLoading(false);
     }
@@ -89,18 +92,22 @@ export default function EditInvoice() {
         clientId: client._id,
         clientName: client.name,
         clientEmail: client.email,
-        clientAddress: `${client.address || ''}, ${client.city || ''}, ${client.state || ''} ${
-          client.zipCode || ''
-        }`.trim(),
+        clientAddress: `${client.address || ""}, ${client.city || ""}, ${
+          client.state || ""
+        } ${client.zipCode || ""}`.trim(),
       });
     }
   };
 
-  const handleItemChange = (index: number, field: keyof InvoiceItem, value: string | number) => {
+  const handleItemChange = (
+    index: number,
+    field: keyof InvoiceItem,
+    value: string | number
+  ) => {
     const newItems = [...items];
     newItems[index] = { ...newItems[index], [field]: value };
 
-    if (field === 'quantity' || field === 'rate' || field === 'tax') {
+    if (field === "quantity" || field === "rate" || field === "tax") {
       newItems[index].amount = calculateItemAmount(
         Number(newItems[index].quantity),
         Number(newItems[index].rate),
@@ -112,7 +119,10 @@ export default function EditInvoice() {
   };
 
   const addItem = () => {
-    setItems([...items, { description: '', quantity: 1, rate: 0, tax: 0, amount: 0 }]);
+    setItems([
+      ...items,
+      { description: "", quantity: 1, rate: 0, tax: 0, amount: 0 },
+    ]);
   };
 
   const removeItem = (index: number) => {
@@ -131,12 +141,16 @@ export default function EditInvoice() {
     e.preventDefault();
 
     if (!formData.clientId) {
-      toast.error('Please select a client');
+      toast.error("Please select a client");
       return;
     }
 
-    if (items.some((item) => !item.description || item.quantity <= 0 || item.rate <= 0)) {
-      toast.error('Please fill in all item details');
+    if (
+      items.some(
+        (item) => !item.description || item.quantity <= 0 || item.rate <= 0
+      )
+    ) {
+      toast.error("Please fill in all item details");
       return;
     }
 
@@ -151,31 +165,34 @@ export default function EditInvoice() {
         total,
       };
 
-      const updatedInvoice = await invoiceService.updateInvoice(id!, invoiceData);
+      const updatedInvoice = await invoiceService.updateInvoice(
+        id!,
+        invoiceData
+      );
       updateInvoice(updatedInvoice);
-      toast.success('Invoice updated successfully!');
-      navigate('/invoices');
+      toast.success("Invoice updated successfully!");
+      navigate("/app/invoices");
     } catch (error) {
-      toast.error('Failed to update invoice');
+      toast.error("Failed to update invoice");
     } finally {
       setLoading(false);
     }
   };
 
- const currencyOptions = [
-  { value: 'INR', label: '₹ INR - Indian Rupee' },
-  { value: 'USD', label: '$ USD - US Dollar' },
-  { value: 'EUR', label: '€ EUR - Euro' },
-  { value: 'GBP', label: '£ GBP - British Pound' },
-  { value: 'AED', label: 'AED - UAE Dirham' },
-  { value: 'SGD', label: 'SGD - Singapore Dollar' },
-];
+  const currencyOptions = [
+    { value: "INR", label: "₹ INR - Indian Rupee" },
+    { value: "USD", label: "$ USD - US Dollar" },
+    { value: "EUR", label: "€ EUR - Euro" },
+    { value: "GBP", label: "£ GBP - British Pound" },
+    { value: "AED", label: "AED - UAE Dirham" },
+    { value: "SGD", label: "SGD - Singapore Dollar" },
+  ];
 
   const statusOptions = [
-    { value: 'draft', label: 'Draft' },
-    { value: 'sent', label: 'Sent' },
-    { value: 'paid', label: 'Paid' },
-    { value: 'overdue', label: 'Overdue' },
+    { value: "draft", label: "Draft" },
+    { value: "sent", label: "Sent" },
+    { value: "paid", label: "Paid" },
+    { value: "overdue", label: "Overdue" },
   ];
 
   if (fetchLoading) {
@@ -188,9 +205,9 @@ export default function EditInvoice() {
 
   return (
     <div className="max-w-7xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Edit Invoice</h1>
-        <p className="text-gray-600">Update invoice details</p>
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-gray-900 mb-1">Edit Invoice</h1>
+        <p className="text-sm text-gray-600">Update invoice details</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -199,38 +216,50 @@ export default function EditInvoice() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Basic Information */}
             <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Basic Information</h2>
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                Basic Information
+              </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Input
                   label="Invoice Number"
                   value={formData.invoiceNumber}
-                  onChange={(e) => setFormData({ ...formData, invoiceNumber: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, invoiceNumber: e.target.value })
+                  }
                   required
                 />
                 <Select
                   label="Currency"
                   value={formData.currency}
-                  onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, currency: e.target.value })
+                  }
                   options={currencyOptions}
                 />
                 <Input
                   label="Issue Date"
                   type="date"
                   value={formData.issueDate}
-                  onChange={(e) => setFormData({ ...formData, issueDate: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, issueDate: e.target.value })
+                  }
                   required
                 />
                 <Input
                   label="Due Date"
                   type="date"
                   value={formData.dueDate}
-                  onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, dueDate: e.target.value })
+                  }
                   required
                 />
                 <Select
                   label="Status"
                   value={formData.status}
-                  onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, status: e.target.value as any })
+                  }
                   options={statusOptions}
                 />
               </div>
@@ -238,14 +267,16 @@ export default function EditInvoice() {
 
             {/* Client Information */}
             <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Client Information</h2>
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                Client Information
+              </h2>
               <div className="space-y-4">
                 <Select
                   label="Select Client"
                   value={formData.clientId}
                   onChange={(e) => handleClientChange(e.target.value)}
                   options={[
-                    { value: '', label: 'Select a client' },
+                    { value: "", label: "Select a client" },
                     ...clients.map((client) => ({
                       value: client._id,
                       label: `${client.name} - ${client.email}`,
@@ -254,9 +285,21 @@ export default function EditInvoice() {
                 />
                 {formData.clientId && (
                   <>
-                    <Input label="Client Name" value={formData.clientName} readOnly />
-                    <Input label="Client Email" value={formData.clientEmail} readOnly />
-                    <Input label="Client Address" value={formData.clientAddress} readOnly />
+                    <Input
+                      label="Client Name"
+                      value={formData.clientName}
+                      readOnly
+                    />
+                    <Input
+                      label="Client Email"
+                      value={formData.clientEmail}
+                      readOnly
+                    />
+                    <Input
+                      label="Client Address"
+                      value={formData.clientAddress}
+                      readOnly
+                    />
                   </>
                 )}
               </div>
@@ -265,8 +308,15 @@ export default function EditInvoice() {
             {/* Invoice Items */}
             <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-gray-900">Invoice Items</h2>
-                <Button type="button" onClick={addItem} size="sm" variant="secondary">
+                <h2 className="text-lg font-semibold text-gray-900">
+                  Invoice Items
+                </h2>
+                <Button
+                  type="button"
+                  onClick={addItem}
+                  size="sm"
+                  variant="secondary"
+                >
                   <Plus className="w-4 h-4 mr-2" />
                   Add Item
                 </Button>
@@ -281,7 +331,9 @@ export default function EditInvoice() {
                       <Input
                         label="Description"
                         value={item.description}
-                        onChange={(e) => handleItemChange(index, 'description', e.target.value)}
+                        onChange={(e) =>
+                          handleItemChange(index, "description", e.target.value)
+                        }
                         placeholder="Item description"
                         required
                       />
@@ -292,7 +344,13 @@ export default function EditInvoice() {
                         type="number"
                         min="1"
                         value={item.quantity}
-                        onChange={(e) => handleItemChange(index, 'quantity', Number(e.target.value))}
+                        onChange={(e) =>
+                          handleItemChange(
+                            index,
+                            "quantity",
+                            Number(e.target.value)
+                          )
+                        }
                         required
                       />
                     </div>
@@ -303,7 +361,13 @@ export default function EditInvoice() {
                         min="0"
                         step="0.01"
                         value={item.rate}
-                        onChange={(e) => handleItemChange(index, 'rate', Number(e.target.value))}
+                        onChange={(e) =>
+                          handleItemChange(
+                            index,
+                            "rate",
+                            Number(e.target.value)
+                          )
+                        }
                         required
                       />
                     </div>
@@ -315,7 +379,9 @@ export default function EditInvoice() {
                         max="100"
                         step="0.01"
                         value={item.tax}
-                        onChange={(e) => handleItemChange(index, 'tax', Number(e.target.value))}
+                        onChange={(e) =>
+                          handleItemChange(index, "tax", Number(e.target.value))
+                        }
                       />
                     </div>
                     <div className="col-span-6 md:col-span-2 flex items-end">
@@ -348,7 +414,9 @@ export default function EditInvoice() {
 
             {/* Discount & Notes */}
             <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Additional Details</h2>
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                Additional Details
+              </h2>
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Input
@@ -357,25 +425,37 @@ export default function EditInvoice() {
                     min="0"
                     step="0.01"
                     value={formData.discount}
-                    onChange={(e) => setFormData({ ...formData, discount: Number(e.target.value) })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        discount: Number(e.target.value),
+                      })
+                    }
                   />
                   <Select
                     label="Discount Type"
                     value={formData.discountType}
                     onChange={(e) =>
-                      setFormData({ ...formData, discountType: e.target.value as any })
+                      setFormData({
+                        ...formData,
+                        discountType: e.target.value as any,
+                      })
                     }
                     options={[
-                      { value: 'fixed', label: 'Fixed Amount' },
-                      { value: 'percentage', label: 'Percentage' },
+                      { value: "fixed", label: "Fixed Amount" },
+                      { value: "percentage", label: "Percentage" },
                     ]}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Notes
+                  </label>
                   <textarea
                     value={formData.notes}
-                    onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, notes: e.target.value })
+                    }
                     rows={3}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Add any notes or additional information"
@@ -387,7 +467,9 @@ export default function EditInvoice() {
                   </label>
                   <textarea
                     value={formData.terms}
-                    onChange={(e) => setFormData({ ...formData, terms: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, terms: e.target.value })
+                    }
                     rows={3}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Payment terms and conditions"
@@ -399,10 +481,14 @@ export default function EditInvoice() {
             {/* Actions */}
             <div className="flex gap-4">
               <Button type="submit" isLoading={loading}>
-                <Save className="w-4 h-4 mr-2" />
+                <Save className="w-4 h-4 mr-1.5" />
                 Update Invoice
               </Button>
-              <Button type="button" variant="secondary" onClick={() => navigate('/invoices')}>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => navigate("/app/invoices")}
+              >
                 Cancel
               </Button>
               <Button
@@ -411,7 +497,7 @@ export default function EditInvoice() {
                 onClick={() => setShowPreview(!showPreview)}
                 className="ml-auto"
               >
-                {showPreview ? 'Hide Preview' : 'Show Preview'}
+                {showPreview ? "Hide Preview" : "Show Preview"}
               </Button>
             </div>
           </form>
@@ -420,7 +506,9 @@ export default function EditInvoice() {
         {/* Summary */}
         <div className="lg:col-span-1">
           <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200 sticky top-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Summary</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              Summary
+            </h2>
             <div className="space-y-3">
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600">Subtotal:</span>
@@ -435,13 +523,15 @@ export default function EditInvoice() {
                   <span className="text-gray-600">Discount:</span>
                   <span className="font-medium text-red-600">
                     -{formData.discount}
-                    {formData.discountType === 'percentage' ? '%' : ''}
+                    {formData.discountType === "percentage" ? "%" : ""}
                   </span>
                 </div>
               )}
               <div className="border-t border-gray-200 pt-3">
                 <div className="flex justify-between">
-                  <span className="text-base font-semibold text-gray-900">Total:</span>
+                  <span className="text-base font-semibold text-gray-900">
+                    Total:
+                  </span>
                   <span className="text-xl font-bold text-blue-600">
                     {formData.currency} {total.toFixed(2)}
                   </span>
@@ -461,8 +551,8 @@ export default function EditInvoice() {
             subtotal,
             taxAmount,
             total,
-            userId: user?.id || '',
-            _id: id || '',
+            userId: user?.id || "",
+            _id: id || "",
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
           }}

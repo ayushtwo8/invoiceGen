@@ -1,18 +1,27 @@
 import { useState } from "react";
 import { useAuthStore } from "../store/authStore";
-import { Link, Outlet, useLocation } from "react-router-dom";
-import { LayoutDashboard, FileText, Users, Settings, X, LogOut, Menu } from "lucide-react";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import {
+  LayoutDashboard,
+  FileText,
+  Users,
+  Settings,
+  X,
+  LogOut,
+  Menu,
+} from "lucide-react";
 
 export default function Layout() {
   const { user, logout } = useAuthStore();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const navigate = useNavigate();
 
   const navigation = [
-    { name: "Dashboard", href: "/", icon: LayoutDashboard },
-    { name: "Invoices", href: "/invoices", icon: FileText },
-    { name: "Clients", href: "/clients", icon: Users },
-    { name: "Settings", href: "/settings", icon: Settings },
+    { name: "Dashboard", href: "/app", icon: LayoutDashboard },
+    { name: "Invoices", href: "/app/invoices", icon: FileText },
+    { name: "Clients", href: "/app/clients", icon: Users },
+    { name: "Settings", href: "/app/settings", icon: Settings },
   ];
 
   const isActive = (path: string) => {
@@ -25,31 +34,36 @@ export default function Layout() {
       {/* Mobile sidebar backdrop */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-gray-900/50 lg:hidden z-40"
+          className="fixed inset-0 bg-black/20 lg:hidden z-40"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 z-50 h-full w-64 bg-white border-r border-gray-200 transform transition-transform duration-300 lg:translate-x-0 ${
+        className={`fixed top-0 left-0 z-50 h-full w-60 bg-white border-r border-gray-200 transform transition-transform duration-200 lg:translate-x-0 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200">
-            <h1 className="text-xl font-bold text-gray-900">InvoiceGen</h1>
+          <div className="flex items-center justify-between h-14 px-5 border-b border-gray-200">
+            <div className="flex items-center gap-2 hover:cursor-pointer"  onClick={() => navigate('/app')}>
+              <div className="w-7 h-7 bg-black rounded-lg flex items-center justify-center">
+                <FileText className="w-4 h-4 text-white" />
+              </div>
+              <span className="text-sm font-semibold ">InvoiceGen</span>
+            </div>
             <button
               onClick={() => setSidebarOpen(false)}
               className="lg:hidden text-gray-500 hover:text-gray-700"
             >
-              <X className="w-6 h-6" />
+              <X className="w-5 h-5" />
             </button>
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 px-4 py-6 space-y-1">
+          <nav className="flex-1 px-3 py-4 space-y-0.5">
             {navigation.map((item) => {
               const Icon = item.icon;
               return (
@@ -57,13 +71,13 @@ export default function Layout() {
                   key={item.name}
                   to={item.href}
                   onClick={() => setSidebarOpen(false)}
-                  className={`flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
+                  className={`flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
                     isActive(item.href)
-                      ? "bg-blue-50 text-blue-700"
-                      : "text-gray-700 hover:bg-gray-100"
+                      ? "bg-gray-100 text-gray-900"
+                      : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                   }`}
                 >
-                  <Icon className="w-5 h-5 mr-3" />
+                  <Icon className="w-4 h-4 mr-3" />
                   {item.name}
                 </Link>
               );
@@ -71,13 +85,13 @@ export default function Layout() {
           </nav>
 
           {/* User section */}
-          <div className="p-4 border-t border-gray-200">
-            <div className="flex items-center mb-4">
-              <div className="flex-shrink-0 w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold">
+          <div className="p-3 border-t border-gray-200">
+            <div className="flex items-center mb-3 px-3 py-2">
+              <div className="shrink-0 w-8 h-8 bg-black rounded-lg flex items-center justify-center text-white text-xs font-semibold">
                 {user?.name?.charAt(0).toUpperCase()}
               </div>
               <div className="ml-3 flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">
+                <p className="text-xs font-medium text-gray-900 truncate">
                   {user?.name}
                 </p>
                 <p className="text-xs text-gray-500 truncate">{user?.email}</p>
@@ -85,9 +99,9 @@ export default function Layout() {
             </div>
             <button
               onClick={logout}
-              className="flex items-center w-full px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+              className="flex items-center w-full px-3 py-2 text-xs font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-lg transition-colors"
             >
-              <LogOut className="w-5 h-5 mr-3" />
+              <LogOut className="w-4 h-4 mr-3" />
               Logout
             </button>
           </div>
@@ -95,15 +109,15 @@ export default function Layout() {
       </aside>
 
       {/* Main content */}
-      <div className="lg:pl-64">
+      <div className="lg:pl-60">
         {/* Top bar */}
         <header className="sticky top-0 z-30 bg-white border-b border-gray-200">
-          <div className="flex items-center h-16 px-6">
+          <div className="flex items-center h-14 px-5">
             <button
               onClick={() => setSidebarOpen(true)}
               className="lg:hidden text-gray-500 hover:text-gray-700"
             >
-              <Menu className="w-6 h-6" />
+              <Menu className="w-5 h-5" />
             </button>
             <div className="flex-1" />
           </div>

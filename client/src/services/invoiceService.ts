@@ -14,6 +14,10 @@ export const invoiceService = {
     const response = await api.get("/invoices", { params });
     return response.data;
   },
+  getInvoiceById: async (id: string): Promise<Invoice> => {
+    const response = await api.get(`/invoices/${id}`);
+    return response.data;
+  },
   updateInvoice: async (
     id: string,
     data: Partial<Invoice>
